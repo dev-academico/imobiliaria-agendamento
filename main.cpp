@@ -15,14 +15,20 @@ struct Visita {
 
 
 void ordenarImoveisPorDistancia(Corretor corretor, std::vector<Imovel>& imoveis) {
+    double corretorLat = corretor.getLat();
+    double corretorLng = corretor.getLng();
     for(size_t j = 0; j < imoveis.size(); j++){
         for(size_t k = j+1; k < imoveis.size(); k++){
-            if(Agendamento::haversine(corretor.getLat(), corretor.getLng(), imoveis[j].getLat(), imoveis[j].getLng()) > 
-               Agendamento::haversine(corretor.getLat(), corretor.getLng(), imoveis[k].getLat(), imoveis[k].getLng())){
+            if(Agendamento::haversine(corretorLat, corretorLng, imoveis[j].getLat(), imoveis[j].getLng()) > 
+               Agendamento::haversine(corretorLat, corretorLng, imoveis[k].getLat(), imoveis[k].getLng())){
                 Imovel aux = imoveis[j];
                 imoveis[j] = imoveis[k];
                 imoveis[k] = aux;
+
             }
+            // Atualizar lat e lng do corretor para o próximo imóvel
+            corretorLat = imoveis[j].getLat();
+            corretorLng = imoveis[j].getLng();
         }   
     }
 };
