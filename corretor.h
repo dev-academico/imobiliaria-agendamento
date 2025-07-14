@@ -13,14 +13,19 @@ class Corretor{
     string nome;
     string telefone;
     bool avaliador;
-    int lat;
-    int lng;
+    double lat;
+    double lng;
 
     public:
-    //construtor com saldo inserido=0 a fim de tornar opcional
-    Corretor(string nome, string telefone, bool avaliador, int lat, int lng);
+    Corretor(string nome, string telefone, bool avaliador, double lat, double lng);
+    Corretor() = default;
 
     int getId();
+
+    double getLat();
+    double getLng();
+
+    bool getAvaliador();
 
 };
 
