@@ -1,8 +1,11 @@
 #include <iostream>
+using std::cout;
+using std::endl;
 #include <vector>
 #include "corretor.h"
 #include "cliente.h"
 #include "imovel.h"
+#include "agendamento.h"
 #define _USE_MATH_DEFINES
 #include <cmath>
 
@@ -10,6 +13,7 @@ struct Visita {
     Corretor corretor;
     std::vector<Imovel> imovel;
 };
+
 
 
 constexpr double EARTH_R = 6371.0; // Raio da Terra em km
@@ -24,6 +28,19 @@ double haversine(double lat1, double lon1, double lat2, double lon2) {
     double c = 2 * std::atan2(std::sqrt(a), std::sqrt(1 - a));
     return EARTH_R * c;
 }
+
+void ordenarImoveisPorDistancia(Corretor corretor, std::vector<Imovel> imoveis) {
+    for(size_t j = 0; j < imoveis.size(); j++){
+        for(size_t k = j+1; k < imoveis.size(); k++){
+            if(haversine(corretor.getLat(), corretor.getLng(), imoveis[j].getLat(), imoveis[j].getLng()) > 
+               haversine(corretor.getLat(), corretor.getLng(), imoveis[k].getLat(), imoveis[k].getLng())){
+                Imovel aux = imoveis[j];
+                imoveis[j] = imoveis[k];
+                imoveis[k] = aux;
+            }
+        }
+    }
+};
 
 void agendar(std::vector<Corretor> corretores, std::vector<Imovel> imoveis, std::vector<Visita>& agenda){
     size_t count=0;
@@ -49,18 +66,40 @@ void agendar(std::vector<Corretor> corretores, std::vector<Imovel> imoveis, std:
             count = 0;
         }
     }
-
-    for(size_t i = 0; i < agenda.size(); ++i){
-        cout << "Corretor " << agenda[i].corretor.getId() << endl;
-        for(size_t j = 0; j < agenda[i].imovel.size(); j++){
-            cout << "Imovel " << agenda[i].imovel[j].getId() << endl;
-        }
-        cout << endl;
-    }
-
-
-
 }
+
+void organizarAgenda(std::vector<Visita>& agenda){
+    for(size_t i = 0; i < agenda.size(); ++i){
+        int horaInicial = 540;
+        // Imprimir corretor
+        cout << "Corretor " << agenda[i].corretor.getId() << endl;
+        // Lat e lng do corretor, para não mudar o local da casa do corretor
+        double corretorLat = agenda[i].corretor.getLat();
+        double corretorLng = agenda[i].corretor.getLng();
+
+        // lista ordenada de imoveis por distancia
+        ordenarImoveisPorDistancia(agenda[i].corretor, agenda[i].imovel);   
+        
+        for(size_t j = 0; j < agenda[i].imovel.size(); j++){
+            // Imprimir imovel mais proximo
+            Imovel imovelMaisProximo = agenda[i].imovel[j];
+            Agendamento agendamento(agenda[i].corretor, corretorLat, corretorLng, imovelMaisProximo, horaInicial);
+
+            // Tempo de agendamento + 60 minutos de trabalho
+            horaInicial = horaInicial + agendamento.getTempo() + 60;
+
+            agendamento.mostrarAgendamento();
+
+            // Atualizar lat e lng do corretor para o próximo imóvel
+            corretorLat = imovelMaisProximo.getLat();
+            corretorLng = imovelMaisProximo.getLng();
+        }
+        if(i != agenda.size() - 1){
+            cout << endl;
+        }
+    }
+}
+
 int main() {
 
     // Ler corretores
@@ -126,6 +165,7 @@ int main() {
     std::vector<Visita> agenda;
 
     agendar(corretoresVetor, imovelVetor, agenda);
-    
+    organizarAgenda(agenda);
+
     return 0;
 }

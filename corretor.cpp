@@ -26,4 +26,3 @@ double Corretor::getLng(){
 bool Corretor::getAvaliador(){
     return this->avaliador;
 }
-
