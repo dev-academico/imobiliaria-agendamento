@@ -16,8 +16,8 @@ class Agendamento{
   public:
     Agendamento() = default;
     Agendamento(Corretor corretor, double corretorLat, double corretorLng, Imovel imovel, int hora);
-    double haversine(double lat1, double lon1, double lat2, double lon2);
-    
+    static double haversine(double lat1, double lon1, double lat2, double lon2);
+
     void mostrarAgendamento();
 
     int getTempo();
