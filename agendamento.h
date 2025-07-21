@@ -3,24 +3,23 @@
 
 #include "corretor.h"
 #include "imovel.h"
-#include <string>
-using std::string;
+#include <vector>
 
-class Agendamento{
-  private:
+struct Visita {
     Corretor corretor;
     Imovel imovel;
-    int hora;
-    int tempo;
+    int horario;
+};
 
-  public:
-    Agendamento() = default;
-    Agendamento(Corretor corretor, double corretorLat, double corretorLng, Imovel imovel, int hora);
-    static double haversine(double lat1, double lon1, double lat2, double lon2);
+class Agendamento {
+public:
+    void agendar(std::vector<Corretor> corretores, std::vector<Imovel> imoveis);
+    void organizarAgenda();
 
-    void mostrarAgendamento();
-
-    int getTempo();
+private:
+    std::vector<Visita> agenda;
+    double haversine(double lat1, double lon1, double lat2, double lon2);
 };
 
 #endif
+
